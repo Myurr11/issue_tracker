@@ -1,0 +1,63 @@
+<div class="detail-container">
+  <div class="detail-header">
+    <h2>Issue Details</h2>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="editIssue()" *ngIf="issue">Edit Issue</button>
+      <button class="btn btn-secondary" (click)="goBack()">Back to Issues</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading issue details...</div>
+  
+  <!-- Error State -->
+  <div *ngIf="error" class="error">{{error}}</div>
+
+  <!-- Issue Details -->
+  <div *ngIf="issue && !loading && !error" class="issue-details">
+    <div class="detail-card">
+      <div class="detail-section">
+        <h3>{{issue.title}}</h3>
+        <div class="badges">
+          <span class="status-badge" [ngClass]="getStatusClass(issue.status)">{{issue.status}}</span>
+          <span class="priority-badge" [ngClass]="getPriorityClass(issue.priority)">{{issue.priority}}</span>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="issue.description">
+        <h4>Description</h4>
+        <div class="description-content">{{issue.description}}</div>
+      </div>
+
+      <div class="detail-section">
+        <h4>Assignment</h4>
+        <div class="assignee-info">
+          <strong>Assignee:</strong> {{issue.assignee || 'Unassigned'}}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h4>Timeline</h4>
+        <div class="timeline-info">
+          <div class="timeline-item">
+            <strong>Created:</strong> {{formatDate(issue.createdAt)}}
+          </div>
+          <div class="timeline-item">
+            <strong>Last Updated:</strong> {{formatDate(issue.updatedAt)}}
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h4>Issue ID</h4>
+        <div class="issue-id">{{issue.id}}</div>
+      </div>
+
+      <!-- Debug section (optional) -->
+      <details class="debug-section">
+        <summary>Raw Issue Data (Debug)</summary>
+        <pre class="json-data">{{getIssueJson()}}</pre>
+      </details>
+    </div>
+  </div>
+</div>

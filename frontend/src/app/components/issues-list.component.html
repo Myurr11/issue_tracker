@@ -1,0 +1,127 @@
+<div class="issues-container">
+  <div class="header-section">
+    <h2>Issues</h2>
+    <button class="btn btn-primary" (click)="createIssue()">Create New Issue</button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (keyup.enter)="onSearch()"
+        placeholder="Search issues by title..."
+        class="form-control">
+      <button class="btn btn-secondary" (click)="onSearch()">Search</button>
+    </div>
+    
+    <div class="filters">
+      <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="form-control">
+        <option value="">All Status</option>
+        <option *ngFor="let status of statusOptions.slice(1)" [value]="status">{{status}}</option>
+      </select>
+      
+      <select [(ngModel)]="selectedPriority" (change)="onFilterChange()" class="form-control">
+        <option value="">All Priorities</option>
+        <option *ngFor="let priority of priorityOptions.slice(1)" [value]="priority">{{priority}}</option>
+      </select>
+      
+      <select [(ngModel)]="selectedAssignee" (change)="onFilterChange()" class="form-control">
+        <option value="">All Assignees</option>
+        <option *ngFor="let assignee of assigneeOptions.slice(1)" [value]="assignee">{{assignee}}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading issues...</div>
+  
+  <!-- Error State -->
+  <div *ngIf="error" class="error">{{error}}</div>
+
+  <!-- Issues Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="issues-table">
+      <thead>
+        <tr>
+          <th (click)="onSort('title')" class="sortable">
+            Title {{getSortIcon('title')}}
+          </th>
+          <th (click)="onSort('status')" class="sortable">
+            Status {{getSortIcon('status')}}
+          </th>
+          <th (click)="onSort('priority')" class="sortable">
+            Priority {{getSortIcon('priority')}}
+          </th>
+          <th (click)="onSort('assignee')" class="sortable">
+            Assignee {{getSortIcon('assignee')}}
+          </th>
+          <th (click)="onSort('updatedAt')" class="sortable">
+            Updated {{getSortIcon('updatedAt')}}
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let issue of issues" (click)="viewIssue(issue)" class="issue-row">
+          <td class="title-cell">
+            <strong>{{issue.title}}</strong>
+            <div class="description" *ngIf="issue.description">{{issue.description | slice:0:100}}{{issue.description && issue.description.length > 100 ? '...' : ''}}</div>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(issue.status)">{{issue.status}}</span>
+          </td>
+          <td>
+            <span class="priority-badge" [ngClass]="getPriorityClass(issue.priority)">{{issue.priority}}</span>
+          </td>
+          <td>{{issue.assignee || 'Unassigned'}}</td>
+          <td>{{formatDate(issue.updatedAt)}}</td>
+          <td class="actions-cell">
+            <button class="btn btn-sm btn-outline" (click)="editIssue($event, issue)">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- No Results -->
+    <div *ngIf="issues.length === 0" class="no-results">
+      <p>No issues found.</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination-section">
+    <div class="pagination-info">
+      Showing {{((currentPage - 1) * pageSize) + 1}} to {{getMaxDisplayed()}} of {{totalItems}} results
+    </div>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn btn-sm" 
+        [disabled]="currentPage === 1" 
+        (click)="onPageChange(currentPage - 1)">
+        Previous
+      </button>
+      
+      <span class="page-info">Page {{currentPage}} of {{totalPages}}</span>
+      
+      <button 
+        class="btn btn-sm" 
+        [disabled]="currentPage === totalPages" 
+        (click)="onPageChange(currentPage + 1)">
+        Next
+      </button>
+    </div>
+    
+    <div class="page-size-control">
+      <label>Items per page:</label>
+      <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="form-control">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+</div>

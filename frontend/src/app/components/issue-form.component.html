@@ -1,0 +1,89 @@
+<div class="form-container">
+  <div class="form-header">
+    <h2>{{isEditMode ? 'Edit Issue' : 'Create New Issue'}}</h2>
+    <button class="btn btn-secondary" (click)="onCancel()">Back to Issues</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">{{isEditMode ? 'Loading issue...' : 'Saving issue...'}}</div>
+  
+  <!-- Error State -->
+  <div *ngIf="error" class="error">{{error}}</div>
+
+  <!-- Form -->
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="issue-form">
+    <div class="form-group">
+      <label for="title">Title *</label>
+      <input 
+        type="text" 
+        id="title"
+        name="title"
+        [(ngModel)]="issue.title" 
+        required
+        class="form-control"
+        placeholder="Enter issue title">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea 
+        id="description"
+        name="description"
+        [(ngModel)]="issue.description" 
+        rows="5"
+        class="form-control"
+        placeholder="Enter issue description (optional)"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select 
+          id="status"
+          name="status"
+          [(ngModel)]="issue.status" 
+          class="form-control">
+          <option *ngFor="let status of statusOptions" [value]="status">{{status}}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="priority">Priority</label>
+        <select 
+          id="priority"
+          name="priority"
+          [(ngModel)]="issue.priority" 
+          class="form-control">
+          <option *ngFor="let priority of priorityOptions" [value]="priority">{{priority}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="assignee">Assignee</label>
+      <input 
+        type="text" 
+        id="assignee"
+        name="assignee"
+        [(ngModel)]="issue.assignee" 
+        class="form-control"
+        placeholder="Enter assignee name (optional)">
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        [disabled]="!isFormValid() || loading">
+        {{isEditMode ? 'Update Issue' : 'Create Issue'}}
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="onCancel()"
+        [disabled]="loading">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
